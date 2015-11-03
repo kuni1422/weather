@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<link type="text/css" rel="stylesheet" href="style.css">
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.0.0-alpha1/jquery.js"></script>
+	<script languege="javascript">
+	$(document).ready(function(){
+		$.ajax({
+			  method: "GET",
+			  url: "http://api.openweathermap.org/data/2.5/weather?q=HaNoin&appid=bd82977b86bf27fb59a04b61b657fb6f&units=metric"
+	
+			})
+			  .done(function( msg ) {
+			   $("#temp").text(msg.main.temp);
+			  });
+
+		  $.ajax({
+		  method: "GET",
+		  url: "http://api.openweathermap.org/data/2.5/forecast/daily?q=London&mode=json&units=metric&cnt=5&appid=bd82977b86bf27fb59a04b61b657fb6f"
+
+		})
+		  .done(function( object ) {
+		  	for(var i=0;i<object.list.length;i++){
+		   
+		   $("#day-5").append("<div class='date left-20'><h3>"+ object.list[i].temp.day+"</h3><p>"+object.list[i].weather[0].description +"</p></div>");
+			}
+		  });
+
+
+
+
+	function getTime(){
+			var t = new Date();
+			return t.toLocaleTimeString();
+		}
+		function getDate(){
+			var d = new Date();
+			return d.toLocaleString();
+
+		}
+		
+
+		setInterval(function(){
+
+		$("#time").text(getTime());
+		$("#date").text(getDate());
+
+		},1000);
+	
+	});
+		
+	</script>
+</head>
+<body>
+	<div>
+		<div class="left">
+			<div class="panel">
+				<div class="header">
+					<h3>Thanh 1</h3>
+				</div>
+				<div class="content">
+
+				</div>
+			</div>
+			<div></div>
+		</div>
+		<div class="right">
+			<div class="panel">
+				<div class="header">
+					<h3>Thanh 2</h3>
+				</div>
+				<div class="content">
+					<div class="left-30">
+						<img />
+					</div>
+					<div class="left-30">
+						<h4 id="temp">19C</h4>
+					</div>
+					<div class="left-30 ">
+
+					</div>
+				</div>
+			</div>
+			<div>
+				<div class="panel left-50 ">
+					<div class="header">
+						<h3>Thanh 3</h3>
+					</div>
+					<div class="content">
+						<div class="time">
+							<h3 id="time">Giờ</h3>
+						</div>
+						<div class="date">
+							<h3 id="date">Ngày </h3>
+						</div>
+					</div>
+				</div>
+				<div class="panel right-50">
+					<div class="header">
+						<h3>Thanh 4</h3>
+					</div>
+					<div class="content">
+						<div class="time">
+							<h3>Giờ</h3>
+						</div>
+						<div class="date">
+							<h3>Ngày</h3>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="panel clear">
+				<div class="header">
+					<h3>Thanh 5</h3>
+				</div>
+				<div class="content" id="day-5">
+			
+
+				</div>
+			</div>
+		</div>
+	</div>
+</body>
+</html
