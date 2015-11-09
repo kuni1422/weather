@@ -4,122 +4,183 @@
 	<meta charset="utf-8">
 	<link type="text/css" rel="stylesheet" href="style.css">
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.0.0-alpha1/jquery.js"></script>
-	<script languege="javascript">
+	<script language="javascript">
+	var defaultCity = "DaNang";
 	$(document).ready(function(){
-		$.ajax({
-			  method: "GET",
-			  url: "http://api.openweathermap.org/data/2.5/weather?q=HaNoin&appid=bd82977b86bf27fb59a04b61b657fb6f&units=metric"
-	
+		loadCurrentWeather(defaultCity);
+	});
+		//Search Location
+		function loadCurrentWeather(cityName){
+
+			$.ajax({
+				method: "GET",
+				url: "http://api.openweathermap.org/data/2.5/weather?q="+cityName+"&appid=45cb7c1aeb99630a8eb5a89d0b5dd29a&units=metric"
 			})
-			  .done(function( msg ) {
-			   $("#temp").text(msg.main.temp);
-			  });
+			.done(function( object ) {
+				clean();
+				//temp	
+				$("#temp").text(object.main.temp+ "°C");
+				//speed
+				$("#speed").text(object.wind.speed);
+				//icon weather
+				$('#icon').append('<img src="http://openweathermap.org/img/w/' + object.weather[0].icon +'.png">');
+				//sunrise
+				setSunTime("sunrise", object.sys.sunrise);
+				//sunset
+				setSunTime("sunset", object.sys.sunset);
+				//country
+				$("#country").text("Thời tiết tại : " + object.name);
+				$.ajax({
+				method: "GET",
+				url: "http://api.openweathermap.org/data/2.5/forecast/daily?q="+cityName+"&mode=json&units=metric&cnt=5&appid=45cb7c1aeb99630a8eb5a89d0b5dd29a"
 
-		  $.ajax({
-		  method: "GET",
-		  url: "http://api.openweathermap.org/data/2.5/forecast/daily?q=London&mode=json&units=metric&cnt=5&appid=bd82977b86bf27fb59a04b61b657fb6f"
+				})
+				.done(function( object ) {
 
-		})
-		  .done(function( object ) {
-		  	for(var i=0;i<object.list.length;i++){
-		   
-		   $("#day-5").append("<div class='date left-20'><h3>"+ object.list[i].temp.day+"</h3><p>"+object.list[i].weather[0].description +"</p></div>");
-			}
-		  });
+						//5-day-after
+						var days =['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+						for(var i=0;i<object.list.length;i++){
+							var date = new Date(object.list[i].dt*1000);
+							var day = days[date.getDay()];
 
+							$("#day-5").append("<div class='date left-20'><h3>" + day +  "</h3><img src='http://openweathermap.org/img/w/" + object.list[i].weather[0].icon +".png'><p>"+object.list[i].temp.max +"°C" + " | " +object.list[i].temp.min + "°C" + "</p></div>");
 
+						}
+					});
+			});
+		}
 
+		
+		function clean(){
+				$('#icon').empty();	
+				$('#temp').empty();
+				$('#speed').empty();
+				$('#sunrise').empty();
+				$('#sunset').empty();
+				$('#country').empty();
+				$('#day-5').empty();
 
-	function getTime(){
+		}
+
+		function setSunTime(whatSun, time){
+		var dateSunTime = new Date(time*1000);
+		var hoursSunTime = dateSunTime.getHours();
+		var minutesSunTime = "0" + dateSunTime.getMinutes();
+		var SunTime = hoursSunTime + ':' + minutesSunTime.substr(-2);
+
+		$(document.getElementById(whatSun)).append('<img src="' + whatSun +'.png" style="margin-right:29px;margin-bottom :-23px;"/>' + SunTime);
+
+		}
+		//getTimeLocal
+
+		function getTime(){
 			var t = new Date();
 			return t.toLocaleTimeString();
 		}
 		function getDate(){
-			var d = new Date();
-			return d.toLocaleString();
+			 var date = new Date();
+			return 	date.toLocaleDateString();
 
 		}
 		
 
 		setInterval(function(){
 
-		$("#time").text(getTime());
-		$("#date").text(getDate());
+			$("#time").text(getTime());
+			$("#date").text(getDate());
 
 		},1000);
-	
-	});
-		
-	</script>
-</head>
-<body>
-	<div>
-		<div class="left">
-			<div class="panel">
-				<div class="header">
-					<h3>Thanh 1</h3>
+
+
+		</script>
+	</head>
+	<body>
+		<div class="all">
+			<div class="container">
+				<div id="country">
+
+
 				</div>
-				<div class="content">
+
+				<div class="left">
+					<div class="panel">
+						<div class="header">
+							<h3>nothing</h3>
+						</div>
+						<div class="content">
+							<div id="random-1">
+
+							</div>
+						</div>
+					</div>
+					<div></div>
+				</div>
+				<div class="right">
+
+					<div class="panel">
+						<div class="header">
+							<h3>CURRENT WEATHER CONDITIONS</h3>
+						</div>
+						<div class="content">
+							<div class="left-30">
+								<h1 id="icon"></h1>
+							</div>
+							<div class="left-30">
+								<h1 id="temp"></h1>
+							</div>
+							<div class="left-30 ">
+								<h1 id="speed"></h1>
+
+							</div>
+						</div>
+					</div>
+					<div>
+						<div class="panel left-50 clear ">
+							<div class="header">
+								<h3>LOCAL TIME & DATE</h3>
+							</div>
+							<div class="content">
+								<div class="time">
+									<h3 id="time">Giờ</h3>
+								</div>
+								<div class="date">
+									<h3 id="date">Ngày </h3>
+								</div>
+							</div>
+						</div>
+						<div class="panel right-50 ">
+							<div class="header">
+								<h3>SUNRISE & SUNSET</h3>
+							</div>
+							<div class="content">
+								<div class="sunrise ">
+									<p id="sunrise"></p>
+
+								</div>
+
+								<div class="sunset">
+									<p id="sunset"></p>
+								</div>
+							</div>
+						</div>
+					</div>
+					<div class="panel clear">
+						<div class="header">
+							<h3>5-DAY FORECAST</h3>
+						</div>
+						<div class="content" id="day-5">
+
+
+						</div>
+					</div>
+					<div id="search">
+						<input type="text" placeholder="Location" id="location"><input type="button" value="Search" onclick="loadCurrentWeather()">
+
+					</div>
+
 
 				</div>
 			</div>
-			<div></div>
 		</div>
-		<div class="right">
-			<div class="panel">
-				<div class="header">
-					<h3>Thanh 2</h3>
-				</div>
-				<div class="content">
-					<div class="left-30">
-						<img />
-					</div>
-					<div class="left-30">
-						<h4 id="temp">19C</h4>
-					</div>
-					<div class="left-30 ">
-
-					</div>
-				</div>
-			</div>
-			<div>
-				<div class="panel left-50 ">
-					<div class="header">
-						<h3>Thanh 3</h3>
-					</div>
-					<div class="content">
-						<div class="time">
-							<h3 id="time">Giờ</h3>
-						</div>
-						<div class="date">
-							<h3 id="date">Ngày </h3>
-						</div>
-					</div>
-				</div>
-				<div class="panel right-50">
-					<div class="header">
-						<h3>Thanh 4</h3>
-					</div>
-					<div class="content">
-						<div class="time">
-							<h3>Giờ</h3>
-						</div>
-						<div class="date">
-							<h3>Ngày</h3>
-						</div>
-					</div>
-				</div>
-			</div>
-			<div class="panel clear">
-				<div class="header">
-					<h3>Thanh 5</h3>
-				</div>
-				<div class="content" id="day-5">
-			
-
-				</div>
-			</div>
-		</div>
-	</div>
-</body>
-</html
+	</body>
+	</html
